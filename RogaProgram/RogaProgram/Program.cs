@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
+using System.Xml.Linq;
 
 namespace RogaProgram
 {
@@ -42,20 +43,35 @@ namespace RogaProgram
         }
         public static void WriteToCSV(List<Person> records, string filePath)
         {
-            using (var writer = new StreamWriter(filePath))
-            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            try
             {
-                csv.WriteRecords(records);
+                using (var writer = new StreamWriter(filePath))
+                using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+                {
+                    csv.WriteRecords(records);
+                }
+            }
+            catch (Exception ex)
+            { 
+                Console.WriteLine("Error writing CSV file ");
             }
         }
 
         public static List<Person> ReadFromCSV(string filePath)
         {
             List<Person> records = new List<Person>();
-            using (var reader = new StreamReader(filePath))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+
+            try
             {
-                 records = csv.GetRecords<Person>().ToList();
+                using (var reader = new StreamReader(filePath))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                     records = csv.GetRecords<Person>().ToList();
+                }
+            }
+            catch (Exception ex)
+            { 
+                Console.WriteLine("Error reading CSV file: ");
             }
             return records;
         }
@@ -63,28 +79,15 @@ namespace RogaProgram
         //Average age of all people
         public static double CalculateAverageAge(List<Person> people)
         {
-            int count=0;
-            double sum=0;
-            foreach (Person person in people)
-            {
-                sum += person.Age;   
-                count++;    
-            }
-            return count != 0 ? sum/count : 0;
+            int average = people.Average(p => p.Age);
+            return average;
         }
 
         //The total number of people weighing between 120lbs and 140lbs
         public static int CalculatePeopleCount(List<Person> people)
         {
-            int count = 0;
-            foreach (Person person in people)
-            {
-                if (person.Weight >= 120 && person.Weight <= 140)
-                {
-                    count++;
-                }   
-            }
-            return count;
+            int total = people.Where(p => p.Weight >= 120 && p.Weight <= 140).Count();
+            return total;
         }
 
         // The average age of the people  weighing between 120lbs and 140lbs 
@@ -105,7 +108,7 @@ namespace RogaProgram
 
         static void Main(string[] args)
         {
-            List<Person> people = GenerateDataset(5);
+            List<Person> people = GenerateDataset(1000);
             WriteToCSV(people, "dataset.csv");
 
             List<Person> readPeople = ReadFromCSV("dataset.csv");
