@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using CsvHelper;
-using System.Xml.Linq;
 
 namespace RogaProgram
 {
@@ -79,7 +78,7 @@ namespace RogaProgram
         //Average age of all people
         public static double CalculateAverageAge(List<Person> people)
         {
-            int average = people.Average(p => p.Age);
+            double average = people.Average(p => p.Age);
             return average;
         }
 
@@ -93,17 +92,8 @@ namespace RogaProgram
         // The average age of the people  weighing between 120lbs and 140lbs 
         public static double CalculateAverageAgeInRange(List<Person> people)
         {
-            int count = 0;
-            double sum = 0;
-            foreach (Person person in people)
-            {
-                if (person.Weight >= 120 && person.Weight <= 140)
-                {
-                    sum += person.Age;
-                    count++;
-                }
-            }
-            return count != 0 ? sum / count : 0;
+            double averageAgeInRange = people.Any()?people.Where(p => p.Weight >= 120 && p.Weight <= 140).Average(p => p.Age):0;
+            return averageAgeInRange;
         }
 
         static void Main(string[] args)
